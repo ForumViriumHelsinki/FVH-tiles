@@ -28,7 +28,7 @@ for u in static_urls:
             elif age > 12:
                 problems.append([f'WARNING: Last modified is {age} hours old', u])
             else:
-                oks.append([f'OK {res.status_code}: Last modified is {age} hours old'], u)
+                oks.append([f'OK {res.status_code}: Last modified is {age} hours old', u])
         else:
             problems.append([f'WEIRD: Last modified does not exist, but status is OK', u])
     else:
