@@ -19,16 +19,19 @@ for u in static_urls:
     res = requests.head(u)
     now = datetime.datetime.now(tz=datetime.timezone.utc)
     lastmod_header = res.headers.get('Last-Modified')
+    content_length = res.headers.get('Content-Length')
     if res.status_code == 200:
         if lastmod_header is not None:
             last_modified = parse(lastmod_header)
             age = round((now - last_modified).seconds / (60 * 60), 1)
             if age > 36:
-                problems.append([f'ERROR: Last modified is {age} hours old', u])
+                problems.append([f'ERROR: Last modified is {age} hours old (size {content_length} B)', u])
             elif age > 12:
-                problems.append([f'WARNING: Last modified is {age} hours old', u])
+                problems.append([f'WARNING: Last modified is {age} hours old (size {content_length} B)', u])
             else:
-                oks.append([f'OK {res.status_code}: Last modified is {age} hours old', u])
+                oks.append([f'OK {res.status_code}: Last modified is {age} hours old (size {content_length} B)', u])
+            if content_length == 0:
+                problems.append([f'ERROR: Empty content', u])
         else:
             problems.append([f'WEIRD: Last modified does not exist, but status is OK', u])
     else:
